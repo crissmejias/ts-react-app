@@ -1,29 +1,52 @@
-import Image from "next/image";
 import { Inter } from "next/font/google";
-import { useState } from "react";
+import {
+  EventHandler,
+  HtmlHTMLAttributes,
+  MouseEventHandler,
+  useState,
+} from "react";
 import { RandomFox } from "@/components/RandomFox";
 import Head from "next/head";
-
+const generateRandomId = (): string => {
+  return (
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15)
+  );
+};
 const inter = Inter({ subsets: ["latin"] });
 const random = () => Math.floor(Math.random() * 123) + 1;
-const randomImage: string = `https://randomfox.ca/images/${random()}.jpg`;
+
 export default function Home() {
-  const [images, setImages] = useState<Array<string>>([
-    `https://randomfox.ca/images/${random()}.jpg`,
-    `https://randomfox.ca/images/${random()}.jpg`,
-    `https://randomfox.ca/images/${random()}.jpg`,
-    `https://randomfox.ca/images/${random()}.jpg`,
-  ]);
+  type ImageItem = Array<{ id: string; url: string }>;
+  const [images, setImages] = useState<ImageItem>([]);
+  const addNewFox: MouseEventHandler<HTMLButtonElement> = (event) => {
+    setImages([
+      ...images,
+      {
+        id: generateRandomId(),
+        url: `https://randomfox.ca/images/${random()}.jpg`,
+      },
+    ]);
+  };
   return (
     <>
       <Head>
         <title>TypeScript & React</title>
       </Head>
       <main className="bg-gray-800 w-full min-h-screen flex justify-center items-center flex-col gap-12">
-        <h1 className="text-4xl  text-gray-100 ">A Random Fox</h1>
-        {images.map((image, index) => (
-          <RandomFox image={image} alt={"A Random Fox"} key={index} />
-        ))}
+        <h1 className="text-5xl text-center break-words text-gray-100 mt-24 ">
+          Get A Random Fox
+        </h1>
+        <button
+          onClick={addNewFox}
+          className="bg-gray-700 text-gray-100 px-4 py-2 rounded-md shadow-md shadow-gray-500 active:translate-y-2 transition">
+          Add a Fox
+        </button>
+        <div className=" w-2/3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 place-items-center py-12">
+          {images.map(({ url, id }) => (
+            <RandomFox image={url} alt={"A Random Fox"} key={id} />
+          ))}
+        </div>
       </main>
     </>
   );
